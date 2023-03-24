@@ -1,0 +1,45 @@
+---
+title: "Run for the River 2023"
+format: html
+editor: visual
+---
+
+```{r echo = F}
+# clear environment
+rm(list=ls())
+
+# load packages
+library(tidyverse)
+library(janitor)
+library(hms)
+library(anytime)
+
+# read in race start info
+race_start_data <- read.csv("race_data/run_for_river_start_data_2023.csv") %>%
+  clean_names() 
+
+# read in race end info
+race_end_data <- read.csv("race_data/run_for_river_end_data_2023.csv") %>%
+  clean_names() 
+
+# calculate timing results and ranks
+results <- left_join(race_start_data,
+                     race_end_data,
+                     by = c("bib_number","start_date")) %>%
+  transform(start_time = as_hms(start_time),
+            finish_time = as_hms(finish_time)) %>%
+  mutate(time_duration = finish_time - start_time) %>%
+  arrange(race_category,time_duration) %>%
+  group_by(race_category) %>%
+  mutate(category_rank = row_number())
+
+write.csv(results, "race_data/run_for_river_results_2023.csv")
+
+# next steps
+
+# change file format to xlsx (more common)
+# make templates downloadable, and filled templates uploadable
+# ensure reuslts will work if date transition occurs
+
+```
+
