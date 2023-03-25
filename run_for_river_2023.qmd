@@ -39,7 +39,10 @@ write.csv(results, "race_data/run_for_river_results_2023.csv")
 
 # change file format to xlsx (more common)
 # make templates downloadable, and filled templates uploadable
-# ensure reuslts will work if date transition occurs
+# ensure reslts will work if date transition occurs
 
+```
+```{r}
+z <- file.choose()
 ```
 
