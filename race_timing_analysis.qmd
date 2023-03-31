@@ -1,5 +1,5 @@
 ---
-title: "Run for the River 2023"
+title: "Race Timing App"
 format: html
 editor: visual
 ---
@@ -13,13 +13,14 @@ library(tidyverse)
 library(janitor)
 library(hms)
 library(anytime)
+library(readxl)
 
 # read in race start info
-race_start_data <- read.csv("race_data/run_for_river_start_data_2023.csv") %>%
+race_start_data <- read_excel("race_data/race_entrant_data.xlsx", sheet = "race_start_data") %>%
   clean_names() 
 
 # read in race end info
-race_end_data <- read.csv("race_data/run_for_river_end_data_2023.csv") %>%
+race_end_data <- read_excel("race_data/race_entrant_data.xlsx", sheet = "race_end_data") %>%
   clean_names() 
 
 # calculate timing results and ranks
@@ -28,21 +29,20 @@ results <- left_join(race_start_data,
                      by = c("bib_number","start_date")) %>%
   transform(start_time = as_hms(start_time),
             finish_time = as_hms(finish_time)) %>%
-  mutate(time_duration = finish_time - start_time) %>%
+  mutate(time_duration = as_hms(finish_time - start_time)) %>%
   arrange(race_category,time_duration) %>%
   group_by(race_category) %>%
   mutate(category_rank = row_number())
 
-write.csv(results, "race_data/run_for_river_results_2023.csv")
+# export results
+write.csv(results, "race_data/race_results.csv", row.names = F)
+
 
 # next steps
 
-# change file format to xlsx (more common)
-# make templates downloadable, and filled templates uploadable
-# ensure reslts will work if date transition occurs
+# make template downloadable from shiny app, and filled templates uploadable to shiny app
+# show results as a datatable online on shiny app
+# show separate results for each race category by tab
+# ensure results will work if time is > 24 hours 
 
 ```
-```{r}
-z <- file.choose()
-```
-
